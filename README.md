@@ -1262,7 +1262,153 @@ class DetailScreen extends StatelessWidget {
 3. [Navigate to a new screen and back](https://docs.flutter.dev/cookbook/navigation/navigation-basics)
 
 ---
-## ⭐️
+## ⭐️ Flutter Guide: Passing Data to the Target Screen
+
+In Flutter, navigating between screens often involves passing data from one screen to another to maintain state and provide the user with relevant information. This process is a core part of app development, and the example provided demonstrates how to effectively **pass data** to a target screen using the **Navigator** in combination with the **MaterialPageRoute** widget. This guide will help you understand how to pass data to another screen and provide a detailed breakdown of the code.
+
+## Overview of the Code
+The given code is for a Flutter app that allows users to pick a category from a grid of categories and navigate to a new screen that displays the meals associated with that category. Here, the data is passed from the **CategoriesScreen** to the **MealsScreen**, which uses **Navigator** and **MaterialPageRoute**.
+
+### Key Components of the Code
+- **`CategoriesScreen`**: This is the screen where users can pick a category from a grid.
+- **`_selectCategory()` Method**: This method is responsible for filtering meals based on the selected category and navigating to the **MealsScreen** with the filtered data.
+- **`Navigator.push()` with `MaterialPageRoute`**: This is the mechanism through which the new screen is loaded, and data is passed.
+- **`MealsScreen`**: The target screen that displays the meals for the selected category.
+
+## Detailed Breakdown of the Code
+### 1. **_selectCategory() Method**
+```dart
+void _selectCategory(BuildContext context, Category category) {
+  final filteredMeals = dummyMeals
+      .where((meal) => meal.categories.contains(category.id))
+      .toList();
+
+  Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (ctx) => MealsScreen(
+        title: category.title,
+        meals: filteredMeals,
+      ),
+    ),
+  );
+}
+```
+- **Purpose**: This method is called when a user selects a category from the grid. It filters the list of meals (`dummyMeals`) based on the category and then navigates to the **MealsScreen**, passing the filtered list and category title as arguments.
+- **Navigator and MaterialPageRoute**: The `Navigator.of(context).push()` is used to add a new screen to the navigation stack. `MaterialPageRoute` helps to define the route and pass the required data to the new screen.
+
+### 2. **GridView and Category Selection**
+```dart
+body: GridView(
+  padding: const EdgeInsets.all(24),
+  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+    crossAxisCount: 2,
+    childAspectRatio: 3 / 2,
+    crossAxisSpacing: 20,
+    mainAxisSpacing: 20,
+  ),
+  children: [
+    for (final category in availableCategories)
+      CategoryGridItem(
+        category: category,
+        onSelectCategory: () {
+          _selectCategory(context, category);
+        },
+      )
+  ],
+)
+```
+- **GridView**: A **GridView** is used to display the categories in a grid format. Each category is represented as a **CategoryGridItem**.
+- **Category Selection**: When a category is tapped, the `onSelectCategory` callback calls `_selectCategory(context, category)` to navigate to the **MealsScreen**.
+
+### 3. **Navigator Usage to Pass Data**
+The **Navigator** and **MaterialPageRoute** are used to navigate between screens while passing data to the target screen.
+- **`Navigator.push()`**: This adds the new screen to the navigation stack.
+- **`MaterialPageRoute`**: Defines the route to the new screen and allows passing data via the constructor.
+- **Passing Data**: In the `builder` function, the **MealsScreen** is initialized with the title and filtered meal list, which means these data values are passed as arguments.
+
+## Example: Full Navigation and Data Passing
+Consider another scenario where a user wants to navigate from a **HomeScreen** to a **DetailScreen** with some detailed information, such as the title and description.
+
+### HomeScreen
+```dart
+class HomeScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Home Screen'),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (ctx) => DetailScreen(
+                  title: 'Item Detail',
+                  description: 'This is the detailed description of the item.',
+                ),
+              ),
+            );
+          },
+          child: Text('Go to Details'),
+        ),
+      ),
+    );
+  }
+}
+```
+### DetailScreen
+```dart
+class DetailScreen extends StatelessWidget {
+  final String title;
+  final String description;
+
+  const DetailScreen({
+    required this.title,
+    required this.description,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Text(description),
+      ),
+    );
+  }
+}
+```
+- **Explanation**: The **HomeScreen** navigates to **DetailScreen** when the button is pressed, passing `title` and `description`. **DetailScreen** receives these values through its constructor and displays them.
+
+## Summary Table
+| Concept                | Explanation                                      | Example in Code                              |
+|------------------------|--------------------------------------------------|----------------------------------------------|
+| **Navigator.push()**   | Adds a new screen to the navigation stack        | `Navigator.of(context).push(MaterialPageRoute(...))` |
+| **MaterialPageRoute**  | Defines how to navigate to the target screen     | `MaterialPageRoute(builder: (ctx) => TargetScreen())` |
+| **Data Passing**       | Passes data to the new screen via constructors   | `MealsScreen(title: category.title, meals: filteredMeals)` |
+
+## Visual Diagram of Navigator Stack
+```
++--------------------+
+| CategoriesScreen   |  <- Initial Screen
++--------------------+
+        |
+        | Navigator.push()
+        v
++--------------------+
+| MealsScreen        |  <- New Screen (top of the stack)
++--------------------+
+```
+- **Explanation**: Initially, the **CategoriesScreen** is displayed. When a category is selected, **Navigator.push()** is called, adding the **MealsScreen** to the top of the stack, making it visible.
+
+## References and Useful Links
+1. [Flutter Documentation - Navigation and Routing](https://flutter.dev/docs/development/ui/navigation)
+2. [Passing data between screens in Flutter](https://stackoverflow.com/questions/53861302/passing-data-between-screens-in-flutter)
+3. [Navigator Widget - Flutter API Reference](https://api.flutter.dev/flutter/widgets/Navigator-class.html)
 
 ---
 ## ⭐️
