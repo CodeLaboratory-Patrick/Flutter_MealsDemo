@@ -3193,7 +3193,165 @@ void _navigateWithArguments(BuildContext context, String userId) {
 3. [Flutter Navigate to New Page: A Comprehensive Guide to Flutter Navigation](https://www.dhiwise.com/post/flutter-navigate-to-new-page-a-comprehensive-guide)
 
 ---
-## ⭐️
+## ⭐️ Flutter Guide: Understanding `PopScope` and Custom Navigation Handling
+
+In Flutter, managing back-navigation behavior is crucial for creating smooth and predictable user experiences. The **`PopScope`** widget offers advanced control over how back-navigation (popping) is handled. This guide explores the **`PopScope`** widget, analyzing the provided code, its use cases, and its benefits for navigation control.
+
+---
+
+## Overview of `PopScope`
+
+### What is `PopScope`?
+**`PopScope`** is a Flutter widget that intercepts the system’s back-navigation action (e.g., pressing the Android back button or a custom back button in the app). It enables developers to define custom behavior when a route is popped from the navigation stack.
+
+### Key Characteristics of `PopScope`
+- **Custom Back Handling**: Intercept and override the default pop behavior.
+- **Fine-Grained Control**: Decide whether to allow or prevent popping based on specific conditions.
+- **Return Values**: Pass data back to the previous route upon popping.
+
+---
+
+## Code Explanation
+
+### Provided Code
+```dart
+enum Filters {
+  glutenFree,
+  lactoseFree,
+  vegetarian,
+  vegan,
+}
+
+PopScope(
+  canPop: false,
+  onPopInvokedWithResult: (bool didPop, dynamic result) {
+    if (didPop) return;
+    Navigator.of(context).pop({
+      Filters.glutenFree: _glutenFreeFilterSet,
+      Filters.lactoseFree: _lactoseFreeFilterSet,
+      Filters.vegetarian: _vegetarianFilterSet,
+      Filters.vegan: _veganFilterSet,
+    });
+  },
+)
+```
+
+### Detailed Explanation
+1. **`Filters` Enum**:
+   - Defines filter types for dietary restrictions: `glutenFree`, `lactoseFree`, `vegetarian`, and `vegan`.
+   - Useful for managing structured data in a type-safe way.
+
+2. **`PopScope` Widget**:
+   - Intercepts back-navigation attempts and invokes the `onPopInvokedWithResult` callback.
+
+3. **`canPop: false`**:
+   - Prevents the default popping behavior when `Navigator.pop()` is called.
+
+4. **`onPopInvokedWithResult`**:
+   - Handles custom logic when a pop action is attempted.
+   - If `didPop` is `true`, the system successfully pops the route. If `false`, the callback executes custom behavior to send filter states back to the previous screen.
+
+5. **`Navigator.of(context).pop({...})`**:
+   - Passes the selected filter states (e.g., `glutenFree`, `lactoseFree`) back to the previous route as a `Map`.
+
+---
+
+## Practical Use Cases
+1. **Filter Management**:
+   - Use `PopScope` to ensure the selected filters are returned to the previous screen when navigating back.
+
+2. **Unsaved Changes Warnings**:
+   - Intercept the back-navigation action to warn users about unsaved changes before allowing them to leave.
+
+3. **Conditional Navigation**:
+   - Prevent back-navigation unless specific criteria are met (e.g., mandatory fields completed).
+
+---
+
+## How to Use `PopScope`
+
+### Basic Example: Confirm Before Exiting
+```dart
+PopScope(
+  onPopInvokedWithResult: (bool didPop, dynamic result) async {
+    final shouldLeave = await showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Are you sure?'),
+        content: Text('You have unsaved changes. Do you want to exit?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text('Exit'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldLeave == true) {
+      Navigator.of(context).pop();
+    }
+  },
+)
+```
+
+- **Scenario**: Warn users before exiting if there are unsaved changes.
+- **Effect**: Displays a confirmation dialog when the back button is pressed.
+
+### Advanced Example: Passing Data Back
+```dart
+PopScope(
+  onPopInvokedWithResult: (didPop, result) {
+    if (!didPop) {
+      Navigator.of(context).pop({
+        'success': true,
+        'timestamp': DateTime.now().toString(),
+      });
+    }
+  },
+)
+```
+- **Scenario**: Pass success status and a timestamp back to the previous screen when navigation completes.
+
+---
+
+## Visual Representation
+```
++-----------------------------------+
+| Current Screen (Filter Options)   |
+|                                   |
+| +-----------------------------+   |
+| | PopScope Intercept Action   |   |
+| +-----------------------------+   |
+|                                   |
+| On Back: Pass Selected Filters    |
++-----------------------------------+
+
++-----------------------------------+
+| Previous Screen (Filter Results)  |
+|                                   |
+| Receives Data from PopScope       |
++-----------------------------------+
+```
+
+---
+
+## Summary Table of `PopScope`
+
+| Property                   | Description                                                                 | Example Usage                               |
+|----------------------------|-----------------------------------------------------------------------------|--------------------------------------------|
+| **`canPop`**               | Determines whether the system pop action is allowed.                        | `canPop: false`                            |
+| **`onPopInvokedWithResult`**| Callback triggered when a pop action is attempted.                          | `onPopInvokedWithResult: (didPop, result)` |
+| **`Navigator.pop()`**      | Manually pop the current route and pass data to the previous route.         | `Navigator.of(context).pop(data)`          |
+
+## References and Useful Links
+1. [Flutter Documentation - Navigator](https://api.flutter.dev/flutter/widgets/Navigator-class.html)
+2. [PopScope<T> class](https://api.flutter.dev/flutter/widgets/PopScope-class.html)
+3. [Migrating from WillPopScope to PopScope in Flutter](https://medium.com/@fahim.ahmed131014/migrating-from-willpopscope-to-popscope-in-flutter-ed792e6011ce)
 
 ---
 ## ⭐️
