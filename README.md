@@ -5123,7 +5123,149 @@ class AsyncCounterScreen extends ConsumerWidget {
 3. [State Management in Flutter with Riverpod - GitHub](https://github.com/rrousselGit/riverpod)
 
 ---
-## ⭐️
+## ⭐️ Flutter Guide: Understanding `FavouriteMealsNotifier` and `StateNotifierProvider`
+
+This guide provides an in-depth explanation of the `FavouriteMealsNotifier` class and its integration with `StateNotifierProvider`. It covers the purpose, functionality, and practical usage of this code in managing favorite meals in a Flutter application using Riverpod.
+
+## Code Overview
+
+### `FavouriteMealsNotifier` Class
+
+This class extends `StateNotifier` to manage a list of favorite meals. `StateNotifier` is a part of the Riverpod package, which facilitates state management in Flutter by exposing immutable states and notifying listeners when the state changes.
+
+#### Key Features:
+1. **State Management**:
+   - Manages a list of favorite meals using immutable state.
+
+2. **Toggle Logic**:
+   - Provides functionality to toggle the favorite status of a meal.
+
+3. **Efficient Rebuilds**:
+   - Only widgets subscribed to the provider rebuild when the state changes.
+
+### Code Breakdown
+
+#### `FavouriteMealsNotifier` Implementation
+```dart
+class FavouriteMealsNotifier extends StateNotifier<List<Meal>> {
+  FavouriteMealsNotifier() : super([]);
+
+  bool toggleMealFavouriteStatus(Meal meal) {
+    final mealIsFavourite = state.contains(meal);
+
+    if (mealIsFavourite) {
+      state = state.where((m) => m.id != meal.id).toList();
+      return false;
+    } else {
+      state = [...state, meal];
+      return true;
+    }
+  }
+}
+```
+
+- **Constructor**: Initializes the `state` as an empty list.
+- **toggleMealFavouriteStatus**:
+  - Checks if the meal is already a favorite.
+  - If it is, removes it from the list.
+  - If not, adds it to the list.
+  - Updates the `state` and returns a boolean indicating the new status.
+
+#### Provider Declaration
+```dart
+final favouriteMealsProvider =
+    StateNotifierProvider<FavouriteMealsNotifier, List<Meal>>((ref) {
+  return FavouriteMealsNotifier();
+});
+```
+
+- **StateNotifierProvider**:
+  - Exposes the `FavouriteMealsNotifier` to the widget tree.
+  - Allows widgets to read and watch the state managed by `FavouriteMealsNotifier`.
+
+## How to Use `FavouriteMealsNotifier`
+
+### Example: Building a Widget
+
+#### Step 1: Define the `Meal` Model
+```dart
+class Meal {
+  final String id;
+  final String title;
+
+  Meal({required this.id, required this.title});
+}
+```
+
+#### Step 2: Consume the Provider in a Widget
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class FavouriteMealsScreen extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final favouriteMeals = ref.watch(favouriteMealsProvider);
+
+    return Scaffold(
+      appBar: AppBar(title: Text('Favourite Meals')),
+      body: favouriteMeals.isEmpty
+          ? Center(child: Text('No favourites yet!'))
+          : ListView.builder(
+              itemCount: favouriteMeals.length,
+              itemBuilder: (ctx, index) {
+                final meal = favouriteMeals[index];
+                return ListTile(
+                  title: Text(meal.title),
+                  trailing: IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () {
+                      ref.read(favouriteMealsProvider.notifier)
+                          .toggleMealFavouriteStatus(meal);
+                    },
+                  ),
+                );
+              },
+            ),
+    );
+  }
+}
+```
+
+## Visual Representation
+
+### State Flow
+```
++------------------------------+
+| StateNotifierProvider        |
+|  FavouriteMealsNotifier      |
+|                              |
+| +--------------------------+ |
+| | Favourite Meals List     | |
+| | - Meal A                 | |
+| | - Meal B                 | |
+| +--------------------------+ |
+|                              |
+|          |                   |
+|          v                   |
+|   Widgets Rebuilt            |
++------------------------------+
+```
+
+## Summary Table
+
+| Feature                   | Description                                                                 |
+|---------------------------|-----------------------------------------------------------------------------|
+| **StateNotifier**         | Manages immutable state and notifies listeners.                            |
+| **StateNotifierProvider** | Exposes the state and logic to the widget tree.                            |
+| **toggleMealFavouriteStatus** | Toggles the favorite status of a meal, updating the state.               |
+| **Efficient Updates**     | Only rebuilds widgets that depend on the updated state.                    |
+
+## References and Useful Links
+
+1. [Flutter Riverpod Documentation](https://riverpod.dev/)
+2. [StateNotifier, ChangeNotifier — Why, When, and How to use them.](https://dev.to/danielasaboro/statenotifier-changenotifier-why-when-and-how-to-use-them-2l6j)
+3. [StateNotifierProvider Examples - GitHub](https://github.com/rrousselGit/riverpod)
 
 ---
 ## ⭐️
