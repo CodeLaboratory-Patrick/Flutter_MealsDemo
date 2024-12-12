@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:meals/widgets/meal_item.dart';
 
 class MealItemTrait extends StatelessWidget {
   const MealItemTrait({
