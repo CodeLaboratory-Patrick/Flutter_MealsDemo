@@ -6694,6 +6694,7 @@ During the animation, the old icon rotates out while the new one rotates in, giv
 - [Flutter Official Documentation: AnimatedSwitcher](https://api.flutter.dev/flutter/widgets/AnimatedSwitcher-class.html)
 - [RotationTransition Documentation](https://api.flutter.dev/flutter/widgets/RotationTransition-class.html)
 - [Flutter Codelabs & Cookbook: Animations](https://docs.flutter.dev/cookbook/animation)
+- [Animation and motion widgets](https://docs.flutter.dev/ui/widgets/animation)
 
 ---
 ## ⭐️
