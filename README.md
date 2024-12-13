@@ -6417,6 +6417,7 @@ In this snippet:
 - [Curves Class Docs](https://api.flutter.dev/flutter/animation/Curves-class.html)
 - [Implementing Motion](https://medium.com/google-design/implementing-motion-9f2839002016)
 - [Material Motion Guidelines](https://m3.material.io/development) (for recommended motion patterns)
+- [Animation and motion widgets](https://docs.flutter.dev/ui/widgets/animation)
 
 ---
 ## ⭐️
